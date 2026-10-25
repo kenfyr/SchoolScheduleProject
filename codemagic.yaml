@@ -1,0 +1,26 @@
+workflows:
+  ios-build:
+    name: SchoolSchedule iOS build
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      xcode: latest
+    scripts:
+      - name: Show Xcode project settings
+        script: |
+          xcodebuild -list -project "$CM_BUILD_DIR/SchoolScheduleProject/SchoolSchedule.xcodeproj"
+      - name: Build app for iPhone (unsigned test build)
+        script: |
+          cd "$CM_BUILD_DIR/SchoolScheduleProject"
+          xcodebuild \
+            -project SchoolSchedule.xcodeproj \
+            -scheme SchoolSchedule \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+    artifacts:
+      - SchoolScheduleProject/build/DerivedData/Build/Products/Release-iphoneos/*.app
+      - /tmp/xcodebuild_logs/*.log
